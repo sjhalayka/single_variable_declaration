@@ -196,7 +196,7 @@ int main(void)
 				cout << endl;
 
 				//cout << type << endl;
-				cout << line << endl;
+				//cout << line << endl;
 			}
 		}
 
