@@ -81,6 +81,8 @@ int main(void)
 		cout << endl << endl << endl;
 		cout << filenames[i] << endl << endl;
 
+		ostringstream output;
+
 		while (getline(infile, line))
 		{
 			if (line == "")
@@ -89,6 +91,7 @@ int main(void)
 			vector<string> tokens = std_strtok(line, "[ \t]\\s*");
 
 			bool found_type = false;
+			bool is_struct = false;
 
 			if (tokens.size() > 0 &&
 				types.end() != find(
@@ -185,22 +188,46 @@ int main(void)
 				}
 				else if (tokens.size() > 1 && tokens[0] == "struct")
 				{
+					is_struct = true;
 					type = "struct " + tokens[1];
 				}
 
-				cout << type << endl;
+				string declarations;
 
-				for (size_t j = 1; j < tokens.size(); j++)
-					cout << tokens[j] << " ";
+				size_t first_index = 1;
+
+				if (is_struct)
+					first_index = 2;
+
+				for (size_t j = first_index; j < tokens.size(); j++)
+					declarations += tokens[j] + " ";
 				
-				cout << endl;
+				vector<string> declaration_tokens = std_strtok(declarations, "[,;]\\s*");
 
-				//cout << type << endl;
-				//cout << line << endl;
+				for (size_t j = 0; j < declaration_tokens.size(); j++)
+					output << type << " " << declaration_tokens[j] << ";" << endl;
+
+
+
 			}
+			else
+			{
+				// Not a variable declaration
+				output << line << endl;
+			}
+
+
 		}
 
+		cout << output.str() << endl;
 
+		infile.close();
+
+		ofstream outfile(filenames[i]);
+
+		outfile << output.str() << endl;
+
+		outfile.close();
 	}
 
 	return 0;
