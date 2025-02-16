@@ -142,7 +142,6 @@ int main(void)
 
 		string line;
 		string prev_lines;
-		string type = "";
 
 		cout << endl << endl << endl;
 		cout << filenames[i] << endl << endl;
@@ -201,6 +200,8 @@ int main(void)
 
 			for (size_t s = 0; s < statements.size(); s++)
 			{
+				string type = "";
+
 				vector<string> tokens = std_strtok(statements[s], "[ \t]\\s*");
 
 				if (tokens.size() == 0)
