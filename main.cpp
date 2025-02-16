@@ -52,6 +52,23 @@ int main(void)
 {
 	std::string path = "Y:/home/sjhalayka/ldak_min";
 
+	vector<string> types;
+	types.push_back("static ");
+	types.push_back("const ");
+	types.push_back("short ");
+	types.push_back("long ");
+	types.push_back("int ");
+	types.push_back("char ");
+	types.push_back("unsigned ");
+	types.push_back("signed ");
+	types.push_back("float ");
+	types.push_back("double ");
+	types.push_back("size_t ");
+	types.push_back("FILE ");
+	types.push_back("DIR ");
+	types.push_back("gzFile ");
+	types.push_back("struct ");
+
 	vector<string> filenames;
 
 	for (const auto& entry : filesystem::directory_iterator(path))
@@ -73,22 +90,7 @@ int main(void)
 	}
 
 
-	vector<string> types;
-	types.push_back("static ");
-	types.push_back("const ");
-	types.push_back("short ");
-	types.push_back("long ");
-	types.push_back("int ");
-	types.push_back("char ");
-	types.push_back("unsigned ");
-	types.push_back("signed ");
-	types.push_back("float ");
-	types.push_back("double ");
-	types.push_back("size_t ");
-	types.push_back("FILE ");
-	types.push_back("DIR ");
-	types.push_back("gzFile ");
-	types.push_back("struct ");
+
 
 	for (size_t i = 0; i < filenames.size(); i++)
 	{
@@ -155,7 +157,7 @@ int main(void)
 				{
 					tokens[j] = trim_left_whitespace(tokens[j]);
 
-					if(j < tokens.size() - 2)
+					if(j < tokens.size() - 1)
 						tokens[j] += ' ';
 				}
 
@@ -210,7 +212,7 @@ int main(void)
 				bool found_type = false;
 				bool is_struct = false;
 				bool is_const = false;
-				bool is_static = false;
+				//bool is_static = false;
 
 			//	cout << "TOKEN0 " << "\"" << tokens[0] << "\"" << endl;
 
@@ -272,36 +274,37 @@ int main(void)
 				{
 					string type = tokens[0];
 
-					if (tokens[0] == "static")
+					if (tokens[0] == "static ")
 					{
-						is_static = true;
+						//is_static = true;
 
-						type = "static";
+						type = "static ";
 
 						for (size_t i = 1; i < tokens.size(); i++)
 						{
-							if (tokens[i] == "size_t" ||
-								tokens[i] == "FILE" ||
-								tokens[i] == "DIR" ||
-								tokens[i] == "gzFile" ||
-								tokens[i] == "double" ||
-								tokens[i] == "float" ||
-								tokens[i] == "unsigned" ||
-								tokens[i] == "signed" ||
-								tokens[i] == "short" ||
-								tokens[i] == "long" ||
-								tokens[i] == "int" ||
-								tokens[i] == "char")
+							if (//tokens[i] == "static " ||
+								tokens[i] == "size_t " ||
+								tokens[i] == "FILE " ||
+								tokens[i] == "DIR " ||
+								tokens[i] == "gzFile " ||
+								tokens[i] == "double " ||
+								tokens[i] == "float " ||
+								tokens[i] == "unsigned " ||
+								tokens[i] == "signed " ||
+								tokens[i] == "short " ||
+								tokens[i] == "long " ||
+								tokens[i] == "int " ||
+								tokens[i] == "char ")
 							{
-								if (tokens[i] != "static")
-									type += tokens[i] + " ";
+								/*if (tokens[i] != "static ")*/
+								type += tokens[i] + " ";
 
 								tokens.erase(tokens.begin() + i);
 								i = 0;
 							}
 						}
 					}
-					if (tokens.size() > 1 && tokens[0] == "const")
+					else if (tokens.size() > 1 && tokens[0] == "const")
 					{
 						type = "const ";
 
