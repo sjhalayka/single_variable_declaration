@@ -6,26 +6,67 @@
 #include <fstream>
 using namespace std;
 
-string trim_left_whitespace(const string& s)
-{
-	string ret;
-	bool found_non_whitespace = false;
 
-	for (size_t i = 0; i < s.size(); i++)
-	{
-		if(false == found_non_whitespace && (s[i] == ' ' || s[i] == '\t'))
-		{
-			continue;
-		}
-		else
-		{
-			found_non_whitespace = true;
-			ret += s[i];
-		}
-	}
-
-	return ret;
+inline void trim_left_whitespace(std::string& s) {
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+		return !std::isspace(ch);
+		}));
 }
+
+// trim from end (in place)
+inline void trim_right_whitespace(std::string& s) {
+	s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+		return !std::isspace(ch);
+		}).base(), s.end());
+}
+
+//string trim_left_whitespace(const string& s)
+//{
+//	string ret;
+//	bool found_non_whitespace = false;
+//
+//	for (size_t i = 0; i < s.size(); i++)
+//	{
+//		if(false == found_non_whitespace && (s[i] == ' ' || s[i] == '\t'))
+//		{
+//			continue;
+//		}
+//		else
+//		{
+//			found_non_whitespace = true;
+//			ret += s[i];
+//		}
+//	}
+//
+//	return ret;
+//}
+//
+//string trim_right_whitespace(const string& s)
+//{
+//	string ret;
+//	bool found_non_whitespace = false;
+//
+//	for (size_t i = s.size() - 1; i >= 0;)
+//	{
+//		if (false == found_non_whitespace && (s[i] == ' ' || s[i] == '\t'))
+//		{
+//			continue;
+//		}
+//		else
+//		{
+//			found_non_whitespace = true;
+//			ret += s[i];
+//		}
+//
+//		if (i > 0)
+//			i--;
+//		else
+//			break;
+//
+//	}
+//
+//	return ret;
+//}
 
 vector<string> std_strtok(const string& s, const string& regex_s)
 {
@@ -101,6 +142,7 @@ int main(void)
 
 		string line;
 		string prev_lines;
+		string type = "";
 
 		cout << endl << endl << endl;
 		cout << filenames[i] << endl << endl;
@@ -122,10 +164,21 @@ int main(void)
 				prev_lines = line;
 			}
 
+
+				
+			trim_right_whitespace(prev_lines);
+
 			bool finished_with_semi_colon = false;
 
 			if (prev_lines[prev_lines.size() - 1] == ';')
 				finished_with_semi_colon = true;
+
+			bool finished_with_comma = false;
+
+			if (prev_lines[prev_lines.size() - 1] == ',' || prev_lines[prev_lines.size() - 1] == ')')
+			{
+				finished_with_comma = true;
+			}
 
 			//bool inside_quotes = false;
 
@@ -155,7 +208,7 @@ int main(void)
 
 				for (size_t j = 0; j < tokens.size(); j++)
 				{
-					tokens[j] = trim_left_whitespace(tokens[j]);
+					trim_left_whitespace(tokens[j]);
 
 					if(j < tokens.size() - 1)
 						tokens[j] += ' ';
@@ -269,168 +322,176 @@ int main(void)
 					continue;
 				}
 
+				if (finished_with_comma)
+				{
+					statements[s].pop_back();
+					output << statements[s] << endl;
+
+					continue;
+				}
+				
+			
+
 				if (statements[s].length() > 0 &&
 					';' == statements[s][statements[s].length() - 1])
 				{
-					string type = tokens[0];
-
-					if (tokens[0] == "static ")
+					if (type == "")
 					{
-						//is_static = true;
+						type = tokens[0];
 
-						type = "static ";
-
-						for (size_t i = 1; i < tokens.size(); i++)
+						if (tokens[0] == "static ")
 						{
-							if (//tokens[i] == "static " ||
-								tokens[i] == "size_t " ||
-								tokens[i] == "FILE " ||
-								tokens[i] == "DIR " ||
-								tokens[i] == "gzFile " ||
-								tokens[i] == "double " ||
-								tokens[i] == "float " ||
-								tokens[i] == "unsigned " ||
-								tokens[i] == "signed " ||
-								tokens[i] == "short " ||
-								tokens[i] == "long " ||
-								tokens[i] == "int " ||
-								tokens[i] == "char ")
-							{
-								/*if (tokens[i] != "static ")*/
-								type += tokens[i] + " ";
+							//is_static = true;
 
-								tokens.erase(tokens.begin() + i);
-								i = 0;
-							}
-						}
-					}
-					else if (tokens.size() > 1 && tokens[0] == "const")
-					{
-						type = "const ";
+							type = "static ";
 
-						for (size_t i = 0; i < tokens.size(); i++)
-						{
-							if (tokens[i] == "size_t" ||
-								tokens[i] == "FILE" ||
-								tokens[i] == "DIR" ||
-								tokens[i] == "gzFile" ||
-								tokens[i] == "double" ||
-								tokens[i] == "float" ||
-								tokens[i] == "unsigned" ||
-								tokens[i] == "signed" ||
-								tokens[i] == "short" ||
-								tokens[i] == "long" ||
-								tokens[i] == "int" ||
-								tokens[i] == "char")
+							for (size_t i = 1; i < tokens.size(); i++)
 							{
-								if (tokens[i] != "const")
+								if (//tokens[i] == "static " ||
+									tokens[i] == "size_t " ||
+									tokens[i] == "FILE " ||
+									tokens[i] == "DIR " ||
+									tokens[i] == "gzFile " ||
+									tokens[i] == "double " ||
+									tokens[i] == "float " ||
+									tokens[i] == "unsigned " ||
+									tokens[i] == "signed " ||
+									tokens[i] == "short " ||
+									tokens[i] == "long " ||
+									tokens[i] == "int " ||
+									tokens[i] == "char ")
+								{
+									/*if (tokens[i] != "static ")*/
 									type += tokens[i] + " ";
 
-								tokens.erase(tokens.begin() + i);
-								i = 0;
+									tokens.erase(tokens.begin() + i);
+									i = 0;
+								}
 							}
 						}
-					}
-					else if (tokens.size() > 1 && tokens[0] == "unsigned")
-					{
-						type = "unsigned ";
-
-						for (size_t i = 0; i < tokens.size(); i++)
+						else if (tokens.size() > 1 && tokens[0] == "const")
 						{
-							if (tokens[i] == "short" ||
-								tokens[i] == "long" ||
-								tokens[i] == "int" ||
-								tokens[i] == "char")
-							{
-								if (tokens[i] != "unsigned")
-									type += tokens[i] + " ";
+							type = "const ";
 
-								tokens.erase(tokens.begin() + i);
-								i = 0;
+							for (size_t i = 0; i < tokens.size(); i++)
+							{
+								if (tokens[i] == "size_t" ||
+									tokens[i] == "FILE" ||
+									tokens[i] == "DIR" ||
+									tokens[i] == "gzFile" ||
+									tokens[i] == "double" ||
+									tokens[i] == "float" ||
+									tokens[i] == "unsigned" ||
+									tokens[i] == "signed" ||
+									tokens[i] == "short" ||
+									tokens[i] == "long" ||
+									tokens[i] == "int" ||
+									tokens[i] == "char")
+								{
+									if (tokens[i] != "const")
+										type += tokens[i] + " ";
+
+									tokens.erase(tokens.begin() + i);
+									i = 0;
+								}
 							}
 						}
-					}
-					else if (tokens.size() > 1 && tokens[0] == "signed")
-					{
-						type = "signed ";
-
-						for (size_t i = 1; i < tokens.size(); i++)
+						else if (tokens.size() > 1 && tokens[0] == "unsigned")
 						{
-							if (
-								tokens[i] == "short" ||
-								tokens[i] == "long" ||
-								tokens[i] == "int" ||
-								tokens[i] == "char")
-							{
-								if (tokens[i] != "signed")
-									type += tokens[i] + " ";
+							type = "unsigned ";
 
-								tokens.erase(tokens.begin() + i);
-								i = 0;
+							for (size_t i = 0; i < tokens.size(); i++)
+							{
+								if (tokens[i] == "short" ||
+									tokens[i] == "long" ||
+									tokens[i] == "int" ||
+									tokens[i] == "char")
+								{
+									if (tokens[i] != "unsigned")
+										type += tokens[i] + " ";
+
+									tokens.erase(tokens.begin() + i);
+									i = 0;
+								}
 							}
 						}
-					}
-					else if (tokens.size() > 1 && tokens[0] == "short")
-					{
-						type = "short ";
-
-						for (size_t i = 0; i < tokens.size(); i++)
+						else if (tokens.size() > 1 && tokens[0] == "signed")
 						{
-							if (
-								tokens[i] == "unsigned" ||
-								tokens[i] == "signed" ||
-								tokens[i] == "int")
-							{
-								if (tokens[i] != "short")
-									type += tokens[i] + " ";
+							type = "signed ";
 
-								tokens.erase(tokens.begin() + i);
-								i = 0;
+							for (size_t i = 1; i < tokens.size(); i++)
+							{
+								if (
+									tokens[i] == "short" ||
+									tokens[i] == "long" ||
+									tokens[i] == "int" ||
+									tokens[i] == "char")
+								{
+									if (tokens[i] != "signed")
+										type += tokens[i] + " ";
+
+									tokens.erase(tokens.begin() + i);
+									i = 0;
+								}
 							}
 						}
-					}
-					else if (tokens.size() > 1 && tokens[0] == "long ")
-					{
-
-						type = "long ";
-
-						for (size_t i = 0; i < tokens.size(); i++)
+						else if (tokens.size() > 1 && tokens[0] == "short")
 						{
-							if (
-								tokens[i] == "unsigned" ||
-								tokens[i] == "signed" ||
-								tokens[i] == "int")
-							{
-								if (tokens[i] != "long ")
-									type += tokens[i] + " ";
+							type = "short ";
 
-								tokens.erase(tokens.begin() + i);
-								i = 0;
+							for (size_t i = 0; i < tokens.size(); i++)
+							{
+								if (
+									tokens[i] == "unsigned" ||
+									tokens[i] == "signed" ||
+									tokens[i] == "int")
+								{
+									if (tokens[i] != "short")
+										type += tokens[i] + " ";
+
+									tokens.erase(tokens.begin() + i);
+									i = 0;
+								}
 							}
 						}
-					}
-					else if (tokens.size() > 1 && tokens[0] == "struct")
-					{
-						is_struct = true;
-						type = "struct " + tokens[1];
-					}
-					//else
-					//{
-					//	cout << "UNKNOWN TYPE " << "\"" << type << "\"" << endl;
-					//}
+						else if (tokens.size() > 1 && tokens[0] == "long ")
+						{
 
+							type = "long ";
+
+							for (size_t i = 0; i < tokens.size(); i++)
+							{
+								if (
+									tokens[i] == "unsigned" ||
+									tokens[i] == "signed" ||
+									tokens[i] == "int")
+								{
+									if (tokens[i] != "long ")
+										type += tokens[i] + " ";
+
+									tokens.erase(tokens.begin() + i);
+									i = 0;
+								}
+							}
+						}
+						else if (tokens.size() > 1 && tokens[0] == "struct")
+						{
+							is_struct = true;
+							type = "struct " + tokens[1];
+						}
+					}
 
 					string declarations;
 
 					size_t first_index = 1;
 
-					//if (is_static || is_struct || is_const)
+					//if (is_struct || is_const)
 					//	first_index = 2;
 
 					for (size_t j = first_index; j < tokens.size(); j++)
 						declarations += tokens[j];
 
-					cout << "DECLARATIONS " << endl;
+					//cout << "DECLARATIONS " << endl;
 
 					vector<string> declaration_tokens = std_strtok(declarations, "[,;]\\s*");
 
