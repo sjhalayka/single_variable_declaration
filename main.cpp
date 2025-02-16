@@ -145,6 +145,7 @@ int main(void)
 
 		cout << endl << endl << endl;
 		cout << filenames[i] << endl << endl;
+		string type = "";
 
 		ostringstream output;
 
@@ -200,8 +201,6 @@ int main(void)
 
 			for (size_t s = 0; s < statements.size(); s++)
 			{
-				string type = "";
-
 				vector<string> tokens = std_strtok(statements[s], "[ \t]\\s*");
 
 				if (tokens.size() == 0)
@@ -332,11 +331,15 @@ int main(void)
 				}
 				
 			
+				
 
 				if (statements[s].length() > 0 &&
-					';' == statements[s][statements[s].length() - 1])
+					(';' == statements[s][statements[s].length() - 1] ||
+					',' == statements[s][statements[s].length() - 1]))
 				{
-					if (type == "")
+
+
+					if (type == "" || s == 0)
 					{
 						type = tokens[0];
 
