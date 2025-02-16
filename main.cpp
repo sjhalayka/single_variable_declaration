@@ -152,7 +152,10 @@ int main(void)
 		while (getline(infile, line))
 		{
 			if (line == "")
+			{
+				output << endl;
 				continue;
+			}
 
 			if (line[line.size() - 1] == '\\')
 			{
@@ -180,16 +183,16 @@ int main(void)
 				finished_with_comma = true;
 			}
 
-			//bool inside_quotes = false;
+			bool inside_quotes = false;
 
-			//for (size_t j = 0; j < prev_lines.size(); j++)
-			//{
-			//	if (prev_lines[j] == '\"')
-			//		inside_quotes = !inside_quotes;
+			for (size_t j = 0; j < prev_lines.size(); j++)
+			{
+				if (prev_lines[j] == '\"')
+					inside_quotes = !inside_quotes;
 
-			//	if (prev_lines[j] == ';' && inside_quotes)
-			//		prev_lines[j] = ';';
-			//}
+				if (prev_lines[j] == ';' && inside_quotes)
+					prev_lines[j] = ':';
+			}
 
 
 
@@ -224,14 +227,15 @@ int main(void)
 					//	if (statements[x][j] == '\\')
 					//		statements[x][j] = ' ';
 
-					for (size_t x = 0; x < statements.size(); x++)
+					for (size_t x = 0; x < tokens.size(); x++)
 					{
-						for (size_t j = 0; j < statements[x].size() - 1; j++)
-							output << statements[x][j];
+						if(tokens[x].size() > 0)
+							tokens[x].pop_back();
 
-						if (x < statements.size() - 1)
-							output << ';';
+						output << tokens[x] << ' ';
 					}
+
+
 
 					output << endl;
 
