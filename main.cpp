@@ -255,9 +255,12 @@ int main(void)
 						for (size_t j = 0; j < statements[x].size() - 1; j++)
 							output << statements[x][j];
 
-						//if (x < statements.size() - 1)
-						output << ';';
+						if (x < statements.size() - 1)
+							output << ';';
 					}
+
+					if (finished_with_semi_colon)
+						output << ';';
 
 					output << endl;
 
